@@ -1,7 +1,5 @@
 import pandas as pd
 import numpy as np
-import csv
-from Graphics import Graphics
 import matplotlib.pyplot as plt
 from MathCore import G0
 
@@ -12,7 +10,7 @@ General data acquisition data
 source_voltage = 2.5
 resistance = 20000
 
-data_file = pd.read_csv(r"acquisition_data.csv")
+data_file = pd.read_csv(r"acquisition_data_3.csv")
 Vwire = -np.array(data_file["Voltage_wire"])
 
 """
@@ -70,7 +68,7 @@ df = pd.DataFrame(
 )
 print("Update: data filtered")
 
-df.to_csv(r"P_filtered_data.csv", index=False, header=["Voltage_wire"])
+df.to_csv(r"P_filtered_data_3.csv", index=False, header=["Voltage_wire"])
 print("Update: filtered data exported")
 
 """

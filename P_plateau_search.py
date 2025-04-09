@@ -20,7 +20,7 @@ It then plot the plateaus found, as well as multiple other variants (conductance
 Define the data to search in
 """
 
-data_file = pd.read_csv(r"csv folder\P_filtered_data.csv")
+data_file = pd.read_csv(r"P_filtered_data_3.csv")
 Vwire = data_file["Voltage_wire"]
 
 """
