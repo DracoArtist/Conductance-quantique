@@ -13,13 +13,16 @@ class Search:
         - data_to_search (numpy ndarray): the data to search trough. Must be an ndarray to avoid the possibility of bugs
     
     Methods:
-    - find_plateaus_diff(self, max_diff, plateau_lenght = 5):
+    - find_plateaus_diff(self, max_diff, minimal_ratio_in=0.8, plateau_lenght = 5):
         This method will go trough the data and search for a series of point (V_{i}, V_{i+1},...,V_{i+n}) 
         that satisfies the following condition:
         - The difference |V_{m+1} - V_{m}| between any two points in the series is smaller than max_diff
         - The series of point is at least plateau_lenght long
     
     - find_plateaus_box(self, plateu_height, plateau_lenght = 5):
+        This method takes the points i to i+plateau_lenght, and checks if there are enough points within a plateau_height
+        voltage interval. If yes, he considers those points to be a plateau.
+        This method returns a plateau if there are at least minimal_ratio_in * plateau_lenght points in the interval.
     
     """
     def __init__(self, data_to_search):
@@ -51,9 +54,9 @@ class Search:
         return plateaus
     
     def count_points_in_box(self, box_height, box_minimum, data):
-        # assert data.__class__.__name__ == "ndarray", "Error: data to search trough is not a ndarray"
-        # assert box_height.__class__.__name__ == "float", f"Error: box_height is {type(box_height)} instead of float"
-        # assert box_minimum.__class__.__name__ == "float", f"Error: box_height is {type(box_minimum)} instead of float"
+        assert data.__class__.__name__ == "ndarray", "Error: data to search trough is not a ndarray"
+        assert box_height.__class__.__name__ in ["float", "float64"], f"Error: box_height is not a float"
+        assert box_minimum.__class__.__name__ in ["float", "float64"], f"Error: box_height is not a float"
 
         points_in_box = 0
 
@@ -64,7 +67,7 @@ class Search:
         
         return points_in_box
 
-    def find_plateaus_box(self, plateu_height, plateau_lenght = 5) -> dict:
+    def find_plateaus_box(self, plateu_height, minimal_ratio_in=0.8, plateau_lenght = 5) -> dict:
         plateaus = {}
         skip_to_index = -1
 
@@ -79,7 +82,7 @@ class Search:
                     box_minimum=point,
                     data=data_to_check
                 )
-                if points_in_box >= 0.8*plateau_lenght:
+                if points_in_box >= minimal_ratio_in*plateau_lenght:
                     plateau = True
                     skip_to_index = index + plateau_lenght + 1
             
@@ -90,17 +93,17 @@ class Search:
     
 
 
-# data_file = pd.read_csv(r"csv folder\P_filtered_data.csv")
+# data_file = pd.read_csv(r"P_filtered_data.csv")
 # Vwire = np.array(data_file["Voltage_wire"])
 # s = Search(data_to_search=Vwire)
-# # plateaus = s.find_plateaus_box(
-# #     plateau_lenght=7,
-# #     plateu_height=0.005
-# # )
-# plateaus = s.find_plateaus_diff(
-#     plateau_lenght=5,
-#     max_diff=0.01
+# plateaus = s.find_plateaus_box(
+#     plateau_lenght=7,
+#     plateu_height=0.005
 # )
+# # plateaus = s.find_plateaus_diff(
+# #     plateau_lenght=5,
+# #     max_diff=0.01
+# # )
 # print(plateaus)
 # plt.plot(
 #     [i for i, _ in enumerate(Vwire)],

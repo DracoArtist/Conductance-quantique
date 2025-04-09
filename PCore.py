@@ -238,10 +238,10 @@ def compute_Rinconnue(V_source=source_voltage, Rres_optimal=300):
 
 def main():
     # Étape 1 : Prétraitement et filtrage
-    process_acquisition_data("acquisition_data.csv", "P_filtered_data.csv")
+    process_acquisition_data("acquisition_data_5.csv", "P_filtered_data_5.csv")
     
     # Étape 2 : Détection des plateaux et optimisation de Rres
-    plateaus = detect_plateaus("P_filtered_data.csv", points_per_plateau=5, max_diff=1e-2)
+    plateaus = detect_plateaus("P_filtered_data_5.csv", points_per_plateau=5, max_diff=1e-2)
     best_Rres, _ = optimize_Rres(plateaus, V=source_voltage, R=resistance, n_range=(1,6))
     plateau_results = assign_plateau_n(plateaus, best_Rres, V=source_voltage, R=resistance, n_range=(1,6))
     

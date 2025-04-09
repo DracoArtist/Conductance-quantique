@@ -1,5 +1,4 @@
 acquisition_data_1.csv: vieux
 acquisition_data_2.csv: comme le vieux
 acquisition_data_3.csv: plus grandes vibrations
-acquisition_data_4.csv: comme 3 mais avec cage fermée
-acquisition_data_5.csv: plus petites vibrations
+acquisition_data_4.csv: avec relai activé manuellement

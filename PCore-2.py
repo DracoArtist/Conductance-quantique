@@ -22,7 +22,7 @@ def process_acquisition_data(acquisition_file="acquisition_data.csv", output_fil
     # Lecture des données brutes
     data_file = pd.read_csv(acquisition_file)
     # On inverse le signe de la tension, comme dans votre code
-    Vwire = -np.array(data_file["Voltage_wire"])
+    Vwire = np.array(data_file["Voltage_wire"])
     
     # Définition de la fonction de calcul de la tension théorique
     def expected_plateau_voltage(n: int, Rres: float, V=source_voltage, R=20000):
@@ -217,15 +217,15 @@ def estimate_R_parameters(plateau_csv="plateau_results_n.csv", V_source=source_v
 
 def main():
     # Étape 1 : Prétraitement et filtrage
-    process_acquisition_data("acquisition_data.csv", "P_filtered_data.csv")
+    process_acquisition_data("acquisition_data_5.csv", "P_filtered_data_5.csv")
     
     # Étape 2 : Détection des plateaux et attribution de n
-    plateaus = detect_plateaus("P_filtered_data.csv", points_per_plateau=5, max_diff=1e-2)
+    plateaus = detect_plateaus("P_filtered_data_5.csv", points_per_plateau=5, max_diff=1e-2)
     # Pour l'attribution de n, on passe une valeur fictive pour R_res (ici 0)
     plateau_results = assign_plateau_n(plateaus, dummy_Rres=0, V=source_voltage, R=20000, n_range=(1,6))
     
     # Nouvelle étape : estimation de R et R_res par ajustement du modèle
-    R_est, R_res_est = estimate_R_parameters("plateau_results_n.csv", V_source=source_voltage)
+    R_est, R_res_est = estimate_R_parameters("plateau_results_n_5.csv", V_source=source_voltage)
     
 if __name__ == "__main__":
     main()

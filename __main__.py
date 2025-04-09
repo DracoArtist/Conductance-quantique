@@ -35,16 +35,16 @@ Arguments:
     - source_channel: the voltage across the whole circuit (so the output of the source)
 """
 
-acquisition = Acquisition(
-    gold_channel = "DAQ_team_3_PHS2903/ai0",  # Across the gold wires
-    source_channel = "DAQ_team_3_PHS2903/ai1",  # Across the source
-    samples_by_second = 100000,
-    # number_of_samples_per_channel = 2,
-    export_target = r"acquisition_data_4.csv"
-)
+# acquisition = Acquisition(
+#     gold_channel = "DAQ_team_3_PHS2903/ai0",  # Across the gold wires
+#     source_channel = "DAQ_team_3_PHS2903/ai1",  # Across the source
+#     samples_by_second = 100000,
+#     # number_of_samples_per_channel = 2,
+#     export_target = r"acquisition_data_1.csv"
+# )
 
-acquisition.continuous_acquisition()
-acquisition.export_to_csv()
+# acquisition.continuous_acquisition()
+# acquisition.export_to_csv()
 
 """
 ----------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ Create a histogram to better visualise the data
 ----------------------------------------------------------------------------------------------
 """
 
-data_file = pd.read_csv(r"acquisition_data_4.csv")
+data_file = pd.read_csv(r"acquisition_data_1.csv")
 
 
 """

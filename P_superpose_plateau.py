@@ -10,7 +10,7 @@ Matplotlib math latex update
 params = {'mathtext.default': 'regular' }          
 plt.rcParams.update(params)
 
-path_to = r"csv folder\P_superpose_plateau.csv"
+path_to = r"P_superpose_plateau.csv"
 data_OG = pd.read_csv(r"acquisition_data_1.csv")
 Vwire = data_OG["Voltage_wire"]
 
