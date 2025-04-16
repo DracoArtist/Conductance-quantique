@@ -89,8 +89,8 @@ class Acquisition:
             task.ai_channels.add_ai_voltage_chan(self.gold_channel)
             task.ai_channels.add_ai_voltage_chan(self.source_channel)
 
-            task.timing.cfg_samp_clk_timing(1000.0, sample_mode=AcquisitionType.CONTINUOUS)
-            task.register_every_n_samples_acquired_into_buffer_event(1000, callback)
+            task.timing.cfg_samp_clk_timing(self.samples_by_second, sample_mode=AcquisitionType.CONTINUOUS)
+            task.register_every_n_samples_acquired_into_buffer_event(self.number_of_samples_per_channel, callback)
             task.start()
 
             time.sleep(acquisition_delay)

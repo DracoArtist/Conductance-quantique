@@ -43,10 +43,10 @@ acquisition = Acquisition(
 
 )
 
-# acquisition.manual_acquisition(export_target = r"acquisition_data_1.csv")
+acquisition.manual_acquisition(export_target = r"acquisition_data_1.csv")  # To take data until manualy stopped
 # acquisition.export_to_csv()
 
-acquisition.time_delayed_acquisition(acquisition_delay=5)
+# acquisition.time_delayed_acquisition(acquisition_delay=5)  # To take data for acquisition_delaya seconds
 
 """
 ----------------------------------------------------------------------------------------------
