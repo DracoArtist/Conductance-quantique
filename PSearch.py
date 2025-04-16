@@ -93,17 +93,17 @@ class Search:
     
 
 
-# data_file = pd.read_csv(r"P_filtered_data.csv")
-# Vwire = np.array(data_file["Voltage_wire"])
+# data_file = pd.read_csv(r"prise_mesure_lab\filor_vibration1.csv", usecols=[3,4], names=['colA', 'colB'])
+# Vwire = np.array(data_file["colB"])
 # s = Search(data_to_search=Vwire)
-# plateaus = s.find_plateaus_box(
-#     plateau_lenght=7,
-#     plateu_height=0.005
-# )
-# # plateaus = s.find_plateaus_diff(
-# #     plateau_lenght=5,
-# #     max_diff=0.01
+# # plateaus = s.find_plateaus_box(
+# #     plateau_lenght=7,
+# #     plateu_height=0.005
 # # )
+# plateaus = s.find_plateaus_diff(
+#     plateau_lenght=5,
+#     max_diff=0.01
+# )
 # print(plateaus)
 # plt.plot(
 #     [i for i, _ in enumerate(Vwire)],

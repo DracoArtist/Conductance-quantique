@@ -1,6 +1,7 @@
 import nidaqmx
 from nidaqmx.constants import AcquisitionType
 import csv
+import time
 
 class Acquisition:
     """
@@ -11,20 +12,25 @@ class Acquisition:
         - gold_channel: the voltage across the gold wire
         - source_channel: the voltage across the whole circuit (so the output of the source)
         - samples_by_second: the rate of sample acquisition per channel per second. Default set to 100000
-        - export_target: the csv file to which the data will be sent. Default set to acquisition_data.csv
         - number_of_samples_per_channel: the number of samples the DAQ acquires at a time. Necessary because
             of the structure of the nidaqmx librairy. Default set at 10000
     """
-    def __init__(self, gold_channel: str, source_channel: str, samples_by_second: int = 10000, export_target: str = r"acquisition_data.csv", number_of_samples_per_channel: int = 1000):
+    def __init__(self, gold_channel: str, source_channel: str, samples_by_second: int = 10000, number_of_samples_per_channel: int = 1000):
         self.gold_channel = gold_channel  # Channel lié à la résistance connue
         self.source_channel = source_channel  # Channel lié à la résistance inconnue
         self.number_of_samples_per_channel = number_of_samples_per_channel  # nombre de points pris par mesures
         self.samples_by_second = samples_by_second
-        self.export_target = export_target
 
         self.data_shelf = {}  # Stores the data acquires trought 'continuous_acquisition' until exported to csv
 
-    def continuous_acquisition(self):
+    def manual_acquisition(self):
+        """
+        This methods instructs the Ni myDAQ to continuously take data, until manually stoped.
+        The data is stored in self.data_shelf
+        """
+
+        assert len(self.data_shelf) == 0, "Data already stored in Acquisition.data_shelf. Continuing would destroy the data. Export to csv first"
+
         with nidaqmx.Task() as task:
             task.ai_channels.add_ai_voltage_chan(self.gold_channel)
             task.ai_channels.add_ai_voltage_chan(self.source_channel)
@@ -54,12 +60,56 @@ class Acquisition:
                 print(f"\nAcquired {total_read} total samples.")
                 print('Update: data acquisition done')
 
+    def time_delayed_acquisition(self, acquisition_delay):
+        """
+        This methods instructs the Ni myDAQ to take data for acquisition_delay seconds.
+        The data is stored in self.data_shelf
+        """
 
-    def export_to_csv(self):
+        assert len(self.data_shelf) == 0, "Data already stored in Acquisition.data_shelf. Continuing would destroy the data. Export to csv first"
+
+        total_read = 0
+        acquisition_count = 0
+        with nidaqmx.Task() as task:
+
+            def callback(task_handle, every_n_samples_event_type, number_of_samples, callback_data):
+                """Callback function for reading signals."""
+                nonlocal total_read
+                nonlocal acquisition_count
+                read = task.read(number_of_samples_per_channel=number_of_samples)
+
+                self.data_shelf[f'ac{acquisition_count}'] = read
+                acquisition_count += 1
+
+                total_read += len(read)
+                print(f"Acquired data: {len(read)} samples. Total {total_read}.", end="\r")
+
+                return 0
+
+            task.ai_channels.add_ai_voltage_chan(self.gold_channel)
+            task.ai_channels.add_ai_voltage_chan(self.source_channel)
+
+            task.timing.cfg_samp_clk_timing(1000.0, sample_mode=AcquisitionType.CONTINUOUS)
+            task.register_every_n_samples_acquired_into_buffer_event(1000, callback)
+            task.start()
+
+            time.sleep(acquisition_delay)
+
+            task.stop()
+
+            print(f"\nAcquired {total_read} total samples.")
+
+
+
+    def export_to_csv(self, export_target: str = r"acquisition_data.csv"):
+        """
+        This method exports the data stored in data_shelf into export_target (this needs to be a path towards a csv).
+        It will then clear self.data_shelf.
+        """
         
-        assert self.export_target.endswith('.csv'), "Target file for acquisition data not a csv"
+        assert export_target.endswith('.csv'), "Target file for acquisition data not a csv"
 
-        with open(self.export_target, 'w', newline='') as csv_file:
+        with open(export_target, 'w', newline='') as csv_file:
             writer = csv.writer(csv_file)
             writer.writerow(['Voltage_wire', 'Voltage_source'])
 
@@ -69,6 +119,7 @@ class Acquisition:
 
                     writer.writerow([wire, source])
 
+        self.data_shelf = {}
         print('Update: export to csv done')
 
     def test_acquisition(self):
